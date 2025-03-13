@@ -34,77 +34,77 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
-      backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(24, 48, 24, 0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Column(
+      backgroundColor: Colors.blueGrey[50],
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 400), // Set max width
+            child: Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12.0),
+              ),
+              elevation: 5,
+              color: Colors.white,
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Set New Password on Your\nEmail",
+                      "Change Your Password",
                       style: heading2.copyWith(color: textBlack),
                     ),
-                    SizedBox(
-                      height: 20,
+                    const SizedBox(height: 8),
+                    Text(
+                      "Enter a new password below to change your password",
+                      style: regular16pt.copyWith(color: textGrey),
                     ),
-                    Image.asset(
-                      'assets/images/accent.png',
-                      width: 99,
-                      height: 4,
-                    )
+                    const SizedBox(height: 24),
+                    Form(
+                      child: Column(
+                        children: [
+                          InputField(
+                            obscureText: !passwordVisible,
+                            hintText: 'New Password',
+                            suffixIcon: IconButton(
+                              color: textGrey,
+                              splashRadius: 1,
+                              icon: Icon(passwordVisible
+                                  ? Icons.visibility_outlined
+                                  : Icons.visibility_off_outlined),
+                              onPressed: togglePassword,
+                            ),
+                            controller: passwordController,
+                          ),
+                          const SizedBox(height: 16),
+                          InputField(
+                            obscureText: !confirmNewPasswordVisible,
+                            hintText: 'Confirm New Password',
+                            suffixIcon: IconButton(
+                              color: textGrey,
+                              splashRadius: 1,
+                              icon: Icon(confirmNewPasswordVisible
+                                  ? Icons.visibility_outlined
+                                  : Icons.visibility_off_outlined),
+                              onPressed: toggleConfirmPassword,
+                            ),
+                            controller: confirmNewPasswordController,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    CustomPrimaryButton(
+                      buttonColor: primaryBlue,
+                      textValue: 'Change Password',
+                      textColor: Colors.white,
+                      onPressed: () {},
+                    ),
                   ],
                 ),
-                SizedBox(
-                  height: 48,
-                ),
-                Form(
-                  child: Column(
-                    children: [
-                      InputField(
-                        obscureText: passwordVisible,
-                          hintText: 'New Password',
-                          suffixIcon: IconButton(
-                            color: textGrey,
-                            splashRadius: 1,
-                            icon: Icon(passwordVisible
-                                ? Icons.visibility_outlined
-                                : Icons.visibility_off_outlined),
-                            onPressed: togglePassword,
-                          ),
-                          controller: passwordController),
-                      SizedBox(
-                        height: 24,
-                      ),
-                      InputField(
-                        obscureText: confirmNewPasswordVisible,
-                          hintText: 'Confirm New Password',
-                          suffixIcon: IconButton(
-                            color: textGrey,
-                            splashRadius: 1,
-                            icon: Icon(confirmNewPasswordVisible
-                                ? Icons.visibility_outlined
-                                : Icons.visibility_off_outlined),
-                            onPressed: toggleConfirmPassword,
-                          ),
-                          controller: confirmNewPasswordController),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 48,
-                ),
-                CustomPrimaryButton(
-                    buttonColor: primaryBlue,
-                    textValue: 'Update Password',
-                    textColor: Colors.white,
-                    onPressed: () {}),
-              ],
+              ),
             ),
           ),
         ),

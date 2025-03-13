@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gradnet_web/pages/new_password.dart';
+import 'package:gradnet_web/theme.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,15 +12,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Gradnet WebApp',
       theme: ThemeData(
-        textTheme: const TextTheme(
-          headlineLarge: TextStyle(fontSize: 24, fontWeight: FontWeight.w700, fontFamily: 'Roboto'),
-          headlineSmall: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, fontFamily: 'Roboto'),
-          bodyLarge: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, fontFamily: 'Roboto'),
+        textTheme: TextTheme(
+          headlineLarge: heading2,
+          headlineSmall: heading5,
+          bodyLarge: regular16pt,
         ),
       ),
-      home: const NewPasswordScreen(),
+      home: NewPasswordScreen(),
     );
   }
 }
