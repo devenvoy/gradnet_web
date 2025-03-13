@@ -1,45 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../theme.dart';
 import '../widgets/input_field.dart';
 import '../widgets/primary_button.dart';
+import '../providers/forgot_password_provider.dart'; 
 
-class NewPasswordScreen extends StatefulWidget {
+class NewPasswordScreen extends StatelessWidget {
   const NewPasswordScreen({super.key});
 
   @override
-  State<NewPasswordScreen> createState() => _NewPasswordScreenState();
-}
-
-class _NewPasswordScreenState extends State<NewPasswordScreen> {
-  final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmNewPasswordController =
-      TextEditingController();
-
-  bool passwordVisible = false;
-  bool confirmNewPasswordVisible = false;
-
-  void togglePassword() {
-    setState(() {
-      passwordVisible = !passwordVisible;
-    });
-  }
-
-  void toggleConfirmPassword() {
-    setState(() {
-      confirmNewPasswordVisible = !confirmNewPasswordVisible;
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final forgotPasswordProvider = context.watch<ForgotPasswordProvider>();
+
     return Scaffold(
       backgroundColor: Colors.blueGrey[50],
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 400), // Set max width
+            constraints: const BoxConstraints(maxWidth: 400),
             child: Card(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12.0),
@@ -66,31 +46,37 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
                       child: Column(
                         children: [
                           InputField(
-                            obscureText: !passwordVisible,
+                            obscureText: !forgotPasswordProvider.passwordVisible,
                             hintText: 'New Password',
+                            errorText: forgotPasswordProvider.passwordError,
                             suffixIcon: IconButton(
                               color: textGrey,
                               splashRadius: 1,
-                              icon: Icon(passwordVisible
+                              icon: Icon(forgotPasswordProvider.passwordVisible
                                   ? Icons.visibility_outlined
                                   : Icons.visibility_off_outlined),
-                              onPressed: togglePassword,
+                              onPressed: forgotPasswordProvider.togglePassword,
                             ),
-                            controller: passwordController,
+                            controller: forgotPasswordProvider.passwordController,
                           ),
                           const SizedBox(height: 16),
                           InputField(
-                            obscureText: !confirmNewPasswordVisible,
+                            obscureText:
+                                !forgotPasswordProvider.confirmNewPasswordVisible,
                             hintText: 'Confirm New Password',
+                            errorText: forgotPasswordProvider.confirmPasswordError,
                             suffixIcon: IconButton(
                               color: textGrey,
                               splashRadius: 1,
-                              icon: Icon(confirmNewPasswordVisible
-                                  ? Icons.visibility_outlined
-                                  : Icons.visibility_off_outlined),
-                              onPressed: toggleConfirmPassword,
+                              icon: Icon(
+                                  forgotPasswordProvider.confirmNewPasswordVisible
+                                      ? Icons.visibility_outlined
+                                      : Icons.visibility_off_outlined),
+                              onPressed:
+                                  forgotPasswordProvider.toggleConfirmPassword,
                             ),
-                            controller: confirmNewPasswordController,
+                            controller:
+                                forgotPasswordProvider.confirmNewPasswordController,
                           ),
                         ],
                       ),
@@ -100,7 +86,7 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
                       buttonColor: primaryBlue,
                       textValue: 'Change Password',
                       textColor: Colors.white,
-                      onPressed: () {},
+                      onPressed: forgotPasswordProvider.validateAndSubmit,
                     ),
                   ],
                 ),

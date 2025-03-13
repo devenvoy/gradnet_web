@@ -4,6 +4,7 @@ import '../theme.dart';
 
 class InputField extends StatelessWidget {
   final String hintText;
+  final String? errorText;
   final bool obscureText;
   final Widget suffixIcon;
   TextInputType? keyBoardType;
@@ -12,6 +13,7 @@ class InputField extends StatelessWidget {
    InputField({
     Key? key,
     required this.hintText,
+    this.errorText,
     this.obscureText = false,
     required this.suffixIcon,
     required this.controller,
@@ -32,6 +34,7 @@ class InputField extends StatelessWidget {
         keyboardType: keyBoardType,
         decoration: InputDecoration(
           hintText: hintText,
+          errorText: errorText,
           hintStyle: heading6.copyWith(color: textGrey),
           border: OutlineInputBorder(
             borderSide: BorderSide.none,
