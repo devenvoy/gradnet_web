@@ -1,37 +1,33 @@
 import 'dart:developer';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
-import 'package:gradnet_web/model/post_model.dart';
+import 'package:gradnet_web/model/profile_model.dart';
 
 class ProfileScreenProvider extends ChangeNotifier {
-  List<Post> _posts = [];
-  bool _isLoading = false;
-  final Dio _dio = Dio();
+  final Dio _dio = Dio(
+    BaseOptions(
+      baseUrl: 'https://grednet-production.up.railway.app',
+      headers: {'accept': 'application/json'},
+    ),
+  );
 
-  List<Post> get posts => _posts;
-  bool get isLoading => _isLoading;
-
-  Future<void> fetchUserPosts(String userId) async {
-    _isLoading = true;
-    notifyListeners();
-
+  Future<UserProfileResponse> getUserProfile(String userId) async {
     try {
-      Response response = await _dio.get(
-        'https://grednet-production.up.railway.app/posts/user',
-        queryParameters: {'user_id': userId},
-        options: Options(headers: {'accept': 'application/json'}),
-      );
+      final response = await _dio.get('/fetch_profile/$userId');
+      log("TAG111 Response: ${response.data}");
 
       if (response.statusCode == 200 && response.data['status'] == true) {
-        List<dynamic> postsJson = response.data['data'];
-        _posts = postsJson.map((json) => Post.fromJson(json)).toList().reversed.toList();
+        UserProfileResponse result = UserProfileResponse.fromJson(response.data['data']);
+        log("TAG111 Parsed UserProfileResponse: $result");
+        return result;
+      } else {
+        log('Error: ${response.statusMessage}');
+        throw Exception('Failed to fetch user profile');
       }
     } catch (e) {
-      log('TAG111: Error fetching posts: $e');
-    } finally {
-      _isLoading = false;
-      notifyListeners();
+      log('Exception: $e');
+      throw Exception('Error fetching user profile');
     }
   }
+
 }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gradnet_web/model/profile_model.dart';
 import 'package:gradnet_web/widgets/profile/circle_image.dart';
 
-class TopAppBarView extends StatelessWidget {
+class TopAppBarView extends StatelessWidget implements PreferredSizeWidget {
   final bool isVisible;
   final VoidCallback onMenuClick;
   final UserProfileResponse userProfile;
@@ -18,13 +18,13 @@ class TopAppBarView extends StatelessWidget {
   Widget build(BuildContext context) {
     return AnimatedOpacity(
       opacity: isVisible ? 1.0 : 0.0,
-      duration: Duration(milliseconds: 600),
+      duration: const Duration(milliseconds: 600),
       child: AppBar(
-        title: Text(userProfile.name.isNotEmpty ? userProfile.name : userProfile.name),
+        title: Text(userProfile.name.isNotEmpty ? userProfile.name : "User"),
         leading: Padding(
-          padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
           child: CircularProfileImage(
-            placeHolderName: userProfile.name.isNotEmpty ? userProfile.name : userProfile.name,
+            placeHolderName: userProfile.name.isNotEmpty ? userProfile.name : "User",
             imageUrl: userProfile.profilePic,
             borderWidth: 0,
             imageSize: 32,
@@ -32,11 +32,14 @@ class TopAppBarView extends StatelessWidget {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.menu),
+            icon: const Icon(Icons.menu),
             onPressed: onMenuClick,
           ),
         ],
       ),
     );
   }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }

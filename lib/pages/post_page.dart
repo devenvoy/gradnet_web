@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:gradnet_web/providers/post_screen_provider.dart';
 import 'package:gradnet_web/widgets/loading_animation.dart';
 import 'package:provider/provider.dart';
-import '../providers/profile_screen_provider.dart';
 import '../widgets/post_item.dart';
 
 class PostPage extends StatefulWidget {
@@ -19,27 +19,27 @@ class _PostPageState extends State<PostPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<ProfileScreenProvider>(context, listen: false)
+      Provider.of<PostScreenProvider>(context, listen: false)
           .fetchUserPosts(widget.userId);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final profileProvider = Provider.of<ProfileScreenProvider>(context);
+    final postProvider = Provider.of<PostScreenProvider>(context);
 
     return Scaffold(
       appBar: AppBar(title: const Text("Gradnet Web App")),
-      body: profileProvider.isLoading
+      body: postProvider.isLoading
           ? Center(
               child: LoadingAnimation()
             )
-          : profileProvider.posts.isEmpty
+          : postProvider.posts.isEmpty
               ? const Center(child: Text("No posts available"))
               : ListView.builder(
-                  itemCount: profileProvider.posts.length,
+                  itemCount: postProvider.posts.length,
                   itemBuilder: (context, index) {
-                    return PostItem(post: profileProvider.posts[index]);
+                    return PostItem(post: postProvider.posts[index]);
                   },
                 ),
     );
