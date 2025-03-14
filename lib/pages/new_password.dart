@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import '../theme.dart';
 import '../widgets/input_field.dart';
 import '../widgets/primary_button.dart';
-import '../providers/forgot_password_provider.dart'; 
+import '../providers/forgot_password_provider.dart';
 
 class NewPasswordScreen extends StatelessWidget {
   const NewPasswordScreen({super.key});
@@ -46,37 +46,45 @@ class NewPasswordScreen extends StatelessWidget {
                       child: Column(
                         children: [
                           InputField(
-                            obscureText: !forgotPasswordProvider.passwordVisible,
+                            obscureText:
+                                !forgotPasswordProvider.passwordVisible,
                             hintText: 'New Password',
                             errorText: forgotPasswordProvider.passwordError,
                             suffixIcon: IconButton(
                               color: textGrey,
                               splashRadius: 1,
-                              icon: Icon(forgotPasswordProvider.passwordVisible
-                                  ? Icons.visibility_outlined
-                                  : Icons.visibility_off_outlined),
+                              icon: Icon(
+                                forgotPasswordProvider.passwordVisible
+                                    ? Icons.visibility_outlined
+                                    : Icons.visibility_off_outlined,
+                              ),
                               onPressed: forgotPasswordProvider.togglePassword,
                             ),
-                            controller: forgotPasswordProvider.passwordController,
+                            controller:
+                                forgotPasswordProvider.passwordController,
                           ),
                           const SizedBox(height: 16),
                           InputField(
                             obscureText:
-                                !forgotPasswordProvider.confirmNewPasswordVisible,
+                                !forgotPasswordProvider
+                                    .confirmNewPasswordVisible,
                             hintText: 'Confirm New Password',
-                            errorText: forgotPasswordProvider.confirmPasswordError,
+                            errorText:
+                                forgotPasswordProvider.confirmPasswordError,
                             suffixIcon: IconButton(
                               color: textGrey,
                               splashRadius: 1,
                               icon: Icon(
-                                  forgotPasswordProvider.confirmNewPasswordVisible
-                                      ? Icons.visibility_outlined
-                                      : Icons.visibility_off_outlined),
+                                forgotPasswordProvider.confirmNewPasswordVisible
+                                    ? Icons.visibility_outlined
+                                    : Icons.visibility_off_outlined,
+                              ),
                               onPressed:
                                   forgotPasswordProvider.toggleConfirmPassword,
                             ),
                             controller:
-                                forgotPasswordProvider.confirmNewPasswordController,
+                                forgotPasswordProvider
+                                    .confirmNewPasswordController,
                           ),
                         ],
                       ),
@@ -86,7 +94,10 @@ class NewPasswordScreen extends StatelessWidget {
                       buttonColor: primaryBlue,
                       textValue: 'Change Password',
                       textColor: Colors.white,
-                      onPressed: forgotPasswordProvider.validateAndSubmit,
+                      showLoader: forgotPasswordProvider.isLoading,
+                      onPressed: () async {
+                        onSubmit(context);
+                      },
                     ),
                   ],
                 ),
@@ -96,5 +107,26 @@ class NewPasswordScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void onSubmit(BuildContext context) async {
+    final provider = Provider.of<ForgotPasswordProvider>(
+      context,
+      listen: false,
+    );
+    String? result = await provider.validateAndSubmit(
+      "oldPassword",
+      "your_token",
+    );
+
+    if (result != null) {
+      if (context.mounted) {
+        Navigator.pushReplacementNamed(
+          context,
+          '/passwordResult',
+          arguments: result,
+        );
+      }
+    }
   }
 }

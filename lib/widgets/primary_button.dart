@@ -6,12 +6,15 @@ class CustomPrimaryButton extends StatelessWidget {
   final String textValue;
   final Color textColor;
   final Function() onPressed;
+  final bool showLoader; // Make final since it's not mutable in StatelessWidget
 
   CustomPrimaryButton({
+    super.key,
     required this.buttonColor,
     required this.textValue,
     required this.textColor,
     required this.onPressed,
+    this.showLoader = false,
   });
 
   @override
@@ -28,18 +31,34 @@ class CustomPrimaryButton extends StatelessWidget {
         child: Material(
           color: Colors.transparent,
           child: InkWell(
-            onTap: onPressed,
+            onTap: showLoader ? null : onPressed, // Disable tap when loading
             borderRadius: BorderRadius.circular(14.0),
             child: Center(
-              child: Text(
-                textValue,
-                style: heading5.copyWith(color: textColor),
+              child: Row(
+                mainAxisSize: MainAxisSize.min, // Aligns content properly
+                children: [
+                  if (showLoader) // Show loader if true
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(textColor),
+                          strokeWidth: 2,
+                        ),
+                      ),
+                    ),
+                  Text(
+                    textValue,
+                    style: heading5.copyWith(color: textColor),
+                  ),
+                ],
               ),
             ),
           ),
         ),
       ),
     );
-    ;
   }
 }
