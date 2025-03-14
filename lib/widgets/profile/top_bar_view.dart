@@ -3,13 +3,11 @@ import 'package:gradnet_web/model/profile_model.dart';
 import 'package:gradnet_web/widgets/profile/circle_image.dart';
 
 class TopAppBarView extends StatelessWidget implements PreferredSizeWidget {
-  final bool isVisible;
   final VoidCallback onMenuClick;
   final UserProfileResponse userProfile;
 
   const TopAppBarView({
     super.key,
-    required this.isVisible,
     required this.onMenuClick,
     required this.userProfile,
   });
@@ -17,9 +15,10 @@ class TopAppBarView extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AnimatedOpacity(
-      opacity: isVisible ? 1.0 : 0.0,
+      opacity:1.0,
       duration: const Duration(milliseconds: 600),
       child: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.surface,
         title: Text(userProfile.name.isNotEmpty ? userProfile.name : "User"),
         leading: Padding(
           padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
@@ -30,12 +29,6 @@ class TopAppBarView extends StatelessWidget implements PreferredSizeWidget {
             imageSize: 32,
           ),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.menu),
-            onPressed: onMenuClick,
-          ),
-        ],
       ),
     );
   }

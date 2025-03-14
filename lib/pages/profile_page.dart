@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:gradnet_web/model/profile_model.dart';
 import 'package:gradnet_web/providers/profile_screen_provider.dart';
@@ -12,9 +10,11 @@ import 'package:gradnet_web/widgets/profile/more_info_section.dart';
 import 'package:gradnet_web/widgets/profile/section_title.dart';
 import 'package:gradnet_web/widgets/profile/top_background.dart';
 import 'package:gradnet_web/widgets/profile/top_scrolling_content.dart';
+import 'package:provider/provider.dart';
+import '../providers/post_screen_provider.dart';
+import '../widgets/loading_animation.dart';
+import '../widgets/post_item.dart';
 import '../widgets/profile/top_bar_view.dart';
-
-
 
 class ProfileScreen extends StatefulWidget {
   final String userId;
@@ -28,11 +28,34 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   late Future<UserProfileResponse> userProfileFuture;
   final ScrollController _scrollController = ScrollController();
+  bool _showAppBar = false; // Initially hidden
 
   @override
   void initState() {
     super.initState();
+
     userProfileFuture = ProfileScreenProvider().getUserProfile(widget.userId);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<PostScreenProvider>(context, listen: false)
+          .fetchUserPosts(widget.userId);
+    });
+
+    // Listen to scroll changes
+    _scrollController.addListener(() {
+      double scrollPosition = _scrollController.offset;
+      double threshold =
+          180; // Adjust this based on when you want to show the app bar
+
+      if (scrollPosition >= threshold && !_showAppBar) {
+        setState(() {
+          _showAppBar = true;
+        });
+      } else if (scrollPosition < threshold && _showAppBar) {
+        setState(() {
+          _showAppBar = false;
+        });
+      }
+    });
   }
 
   @override
@@ -43,6 +66,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final postProvider = Provider.of<PostScreenProvider>(context);
+
     return FutureBuilder<UserProfileResponse>(
       future: userProfileFuture,
       builder: (context, snapshot) {
@@ -56,12 +81,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
         final userProfile = snapshot.data!;
         return DefaultTabController(
-          length: 2, // Ensure the number of tabs matches
+          length: 2,
           child: Scaffold(
-            appBar: TopAppBarView(
-              userProfile: userProfile,
-              isVisible: true,
-              onMenuClick: () {},
+            appBar: PreferredSize(
+              preferredSize: Size.fromHeight(56), // Standard app bar height
+              child: AnimatedOpacity(
+                duration: Duration(milliseconds: 300),
+                opacity: _showAppBar ? 1.0 : 0.0,
+                child:
+                    _showAppBar
+                        ? TopAppBarView(
+                          userProfile: userProfile,
+                          onMenuClick: () {},
+                        )
+                        : SizedBox.shrink(),
+              ),
             ),
             body: NestedScrollView(
               controller: _scrollController,
@@ -90,22 +124,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 children: [
                                   Text(
                                     userProfile.name,
-                                    style:
-                                        Theme.of(context).textTheme.titleLarge,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                   Text(
-                                    userProfile.email,
-                                    style:
-                                        Theme.of(context).textTheme.bodyMedium,
-                                  ),
-                                  if (userProfile.designation != null)
-                                    Text(
-                                      userProfile.designation!,
-                                      style:
-                                          Theme.of(
-                                            context,
-                                          ).textTheme.bodyMedium,
+                                    userProfile.designation ??
+                                        (userProfile.course ??
+                                            userProfile.email),
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w400,
                                     ),
+                                  ),
                                 ],
                               ),
                             ),
@@ -115,9 +147,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ),
                   SliverPersistentHeader(
-                    pinned: true, // Keeps the TabBar fixed after scrolling
+                    pinned: true,
                     delegate: _SliverAppBarDelegate(
                       TabBar(
+                        labelColor: Colors.blue[300]!,
+                        unselectedLabelColor:
+                            Theme.of(context).colorScheme.onSurface,
                         indicator: FancyIndicator(color: Colors.blue[300]!),
                         tabs: const [Tab(text: 'Posts'), Tab(text: 'Details')],
                       ),
@@ -127,7 +162,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               },
               body: TabBarView(
                 children: [
-                  UserPostsContent(),
+                  UserPostsContent(postProvider),
                   UserDetailsContent(userProfile: userProfile),
                 ],
               ),
@@ -169,15 +204,23 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
 }
 
 class UserPostsContent extends StatelessWidget {
-  const UserPostsContent({super.key});
-
-  double getScreenHeight(BuildContext context) {
-    return MediaQuery.of(context).size.height;
-  }
+  PostScreenProvider postProvider;
+  UserPostsContent(this.postProvider, {super.key});
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(height: getScreenHeight(context) / 2);
+    return postProvider.isLoading
+        ? Center(
+        child: LoadingAnimation()
+    )
+        : postProvider.posts.isEmpty
+        ? const Center(child: Text("No posts available"))
+        : ListView.builder(
+      itemCount: postProvider.posts.length,
+      itemBuilder: (context, index) {
+        return PostItem(post: postProvider.posts[index]);
+      },
+    );
   }
 }
 
@@ -189,20 +232,17 @@ class UserDetailsContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      padding: EdgeInsets.all(10),
+      padding: const EdgeInsets.all(10),
       children: [
         AboutMeSection(about: userProfile.aboutSelf.toString()),
-
         InterestsSection(
           icon: Icons.computer,
           title: "Skills",
           data: userProfile.skills,
         ),
-
         if (userProfile.education.isNotEmpty) ...[
           SectionTitle(icon: Icons.school, title: "Education"),
           Card(
-            margin: EdgeInsets.symmetric(vertical: 10),
             color: Theme.of(context).cardColor,
             elevation: 1,
             child: Column(
@@ -213,11 +253,9 @@ class UserDetailsContent extends StatelessWidget {
             ),
           ),
         ],
-
         if (userProfile.experience.isNotEmpty) ...[
           SectionTitle(icon: Icons.work_outline, title: "Experience"),
           Card(
-            margin: EdgeInsets.symmetric(vertical: 10),
             color: Theme.of(context).cardColor,
             elevation: 1,
             child: Column(
@@ -230,19 +268,16 @@ class UserDetailsContent extends StatelessWidget {
             ),
           ),
         ],
-
         InterestsSection(
           icon: Icons.translate,
           title: "Languages",
           data: userProfile.languages,
         ),
-
         MoreInfoSection(
           phoneNumber: userProfile.phoneNo.toString(),
           email: userProfile.email,
           socialUrls: userProfile.urls,
         ),
-
         const SizedBox(height: 200),
       ],
     );

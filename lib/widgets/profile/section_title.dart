@@ -14,23 +14,26 @@ class SectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        if (icon != null)
-          Icon(icon, size: 20, color: Theme.of(context).colorScheme.onSurface)
-        else if (assetIcon != null)
-          Image.asset(assetIcon!, width: 20, height: 20),
-        if (icon != null || assetIcon != null) SizedBox(width: 4),
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: Theme.of(context).colorScheme.onSurface,
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          if (icon != null)
+            Icon(icon, size: 20, color: Theme.of(context).colorScheme.onSurface)
+          else if (assetIcon != null)
+            Image.asset(assetIcon!, width: 20, height: 20),
+          if (icon != null || assetIcon != null) SizedBox(width: 4),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

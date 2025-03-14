@@ -2,16 +2,16 @@ class UserProfileResponse {
   final String id;
   final String name;
   final String email;
-  final int? phoneNo;
-  final int? verifyId;
+  final String? phoneNo;
+  final String verifyId;
   final String? profilePic;
   final String? backgroundPic;
   final bool verified;
   final bool plusMember;
-  final String? aboutSelf;
+  final String aboutSelf;
   final String? collegeName;
   final String? course;
-  final String? address;
+  final String address;
   final String? dob;
   final String? gender;
   final List<String>? languages;
@@ -34,7 +34,7 @@ class UserProfileResponse {
     this.name = "",
     this.email = "",
     this.phoneNo,
-    this.verifyId,
+    this.verifyId = "",
     this.profilePic = "",
     this.backgroundPic = "",
     this.verified = false,
@@ -97,18 +97,12 @@ class UserProfileResponse {
 
   factory UserProfileResponse.fromJson(Map<String, dynamic> json) {
     return UserProfileResponse(
-      id: json['id'] ?? "",
-      name: json['name'] ?? "",
-      email: json['email'] ?? "",
-      phoneNo:
-          json['phone_no'] != null
-              ? int.tryParse(json['phone_no'].toString())
-              : null,
-      verifyId:
-          json['verify_id'] != null
-              ? int.tryParse(json['verify_id'].toString())
-              : null,
-      profilePic: json['profile_pic'] ?? "",
+      id: json['id'],
+      name: json['name'],
+      email: json['email'],
+        phoneNo: json['phone_no'].toString(),
+        verifyId: json['verify_id'].toString(),
+      profilePic: json['profile_pic'],
       backgroundPic: json['background_pic'] ?? "",
       verified: json['verified'] ?? false,
       plusMember: json['plus_member'] ?? false,
@@ -130,7 +124,7 @@ class UserProfileResponse {
       employee: json['employee'] ?? "",
       website: json['website'] ?? "",
       department: json['department'] ?? "",
-      designation: json['designation'] ?? "",
+      designation: json['designation'],
       education:
           (json['education'] as List<dynamic>?)
               ?.map((e) => EducationDto.fromJson(e))
@@ -150,6 +144,7 @@ class UserProfileResponse {
       createdAt: json['created_at'] ?? "",
       updatedAt: json['updated_at'] ?? "",
       accessToken: json['access_token'] ?? "",
+      course: json['course']
     );
   }
 }
@@ -173,18 +168,29 @@ class EducationDto {
     this.endDate,
   });
 
+  @override
+  String toString() {
+    return 'EducationDto{'
+        'schoolName: $schoolName, '
+        'degree: $degree, '
+        'fieldOfStudy: $fieldOfStudy, '
+        'location: $location, '
+        'description: $description, '
+        'startDate: $startDate, '
+        'endDate: $endDate'
+
+        '}';
+  }
+
   factory EducationDto.fromJson(Map<String, dynamic> json) {
     return EducationDto(
-      schoolName:
-          json['institution'] ?? "", // 'institution' instead of 'school_name'
       degree: json['degree'] ?? "",
-      fieldOfStudy:
-          json['filed_of_study'] ??
-          "", // Fix typo: 'filed_of_study' -> 'fieldOfStudy'
+      schoolName: json['institution'],
+      fieldOfStudy: json['filed_of_study'] ?? "",
       location: json['location'] ?? "",
       description: json['description'] ?? "",
-      startDate: json['start_year'] ?? "", // 'start_year' in API response
-      endDate: json['end_year'] ?? "", // 'end_year' in API response
+      startDate: json['start_date'] ,
+      endDate: json['end_date'] ?? "Present",
     );
   }
 }
@@ -210,16 +216,32 @@ class ExperienceDto {
     this.endDate,
   });
 
+  @override
+  String toString() {
+    return 'ExperienceDto{'
+        'id: $id, '
+        'jobTitle: $jobTitle, '
+        'jobType: $jobType, '
+        'companyName: $companyName, '
+        'location: $location, '
+        'jobDescription: $jobDescription, '
+        'startDate: $startDate, '
+        'endDate: $endDate'
+
+
+        '}';
+  }
+
   factory ExperienceDto.fromJson(Map<String, dynamic> json) {
     return ExperienceDto(
-      id: json['id'] ?? 0,
-      jobTitle: json['job_title'] ?? "",
+      id: json['id'],
+      jobTitle: json['job_title'] ,
       jobType: json['job_type'] ?? "",
       companyName: json['company_name'] ?? "",
       location: json['location'] ?? "",
       jobDescription: json['job_description'] ?? "",
-      startDate: json['start_date'] ?? "",
-      endDate: json['end_date'] ?? "",
+      startDate: json['start_date'],
+      endDate: json['end_date'] ?? "Present",
     );
   }
 }
@@ -230,7 +252,12 @@ class URLDto {
 
   URLDto({required this.type, this.url});
 
+  @override
+  String toString() {
+    return 'URLDto{type: $type, url: $url}';
+  }
+
   factory URLDto.fromJson(Map<String, dynamic> json) {
-    return URLDto(type: json['url_type'] ?? "", url: json['url'] ?? "");
+    return URLDto(type: json['url_type'], url: json['url']);
   }
 }

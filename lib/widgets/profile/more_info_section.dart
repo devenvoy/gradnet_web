@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gradnet_web/model/profile_model.dart';
+import 'package:gradnet_web/widgets/profile/section_title.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MoreInfoSection extends StatelessWidget {
@@ -27,7 +28,7 @@ class MoreInfoSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        _buildSectionTitle(context, Icons.contacts, "Contacts"),
+        SectionTitle(icon:Icons.contacts, title: "Contacts"),
         Wrap(
           alignment: WrapAlignment.center,
           spacing: 12,
@@ -53,23 +54,6 @@ class MoreInfoSection extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionTitle(BuildContext context, IconData icon, String title) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, size: 20),
-          const SizedBox(width: 6),
-          Text(
-            title,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildContactIconButton({required IconData icon, VoidCallback? onClick}) {
     return InkWell(
       onTap: onClick,
@@ -90,7 +74,7 @@ class MoreInfoSection extends StatelessWidget {
   }
 
   IconData _getIconForType(String type) {
-    switch (type.toLowerCase()) {
+    switch (type) {
       case 'linkedinUrl':
         return FontAwesomeIcons.linkedin;
       case 'twitterUrl':

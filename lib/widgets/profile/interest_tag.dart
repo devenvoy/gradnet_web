@@ -12,8 +12,8 @@ class InterestTag extends StatelessWidget {
     super.key,
     required this.text,
     this.onClick,
-    this.backgroundColor,
-    this.textColor,
+    this.backgroundColor = const Color(0xFFB3E5FC),
+    this.textColor = const Color(0xFF1976D2),
     this.textStyle,
     this.borderRadius = const BorderRadius.all(Radius.circular(4)),
   });
