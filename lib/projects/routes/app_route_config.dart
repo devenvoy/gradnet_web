@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:gradnet_web/pages/home_page.dart';
 import 'package:gradnet_web/pages/new_password.dart';
 import 'package:gradnet_web/pages/password_result.dart';
+import 'package:gradnet_web/pages/post_page.dart';
 import 'package:gradnet_web/projects/routes/app_route_constants.dart';
 
 class MyAppRouter {
@@ -29,6 +30,14 @@ class MyAppRouter {
           }
 
           return MaterialPage(child: NewPasswordScreen(token: token));
+        },
+      ),
+
+      GoRoute(
+        name: MyAppRouteConstants.postRouteName,
+        path: '/${MyAppRouteConstants.postRouteName}',
+        pageBuilder: (context, state) {
+          return MaterialPage(child: PostPage());
         },
       ),
 

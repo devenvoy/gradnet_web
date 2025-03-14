@@ -18,11 +18,10 @@ class HomeScreen extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 GoRouter.of(context).pushNamed(
-                  MyAppRouteConstants.newPasswordRouteName,
-                  queryParams: {'token': 'jnonovnadonv'},
+                  MyAppRouteConstants.postRouteName
                 );
               },
-              child: Text("new password"),
+              child: Text("post page"),
             ),
           ],
         ),
