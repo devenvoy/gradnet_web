@@ -55,7 +55,8 @@ class _PostItemState extends State<PostItem> {
               _buildProfileRow(),
               const SizedBox(height: 8),
               RichTextView(text: widget.post.description),
-              if (widget.post.photos.isNotEmpty) PostImages(images: widget.post.photos,onLikeClicked: (){}),
+              if (widget.post.photos.isNotEmpty)
+                PostImages(images: widget.post.photos, onLikeClicked: () {}),
               const SizedBox(height: 10),
               _buildActionRow(),
             ],
@@ -72,12 +73,14 @@ class _PostItemState extends State<PostItem> {
           onTap: widget.checkProfileEnable ? widget.onProfileClick : null,
           child: CircleAvatar(
             radius: 18,
-            backgroundImage: widget.post.userProfilePic != null
-                ? NetworkImage(widget.post.userProfilePic)
-                : null,
-            child: widget.post.userProfilePic == null
-                ? Text(widget.post.userName[0])
-                : null,
+            backgroundImage:
+                widget.post.userProfilePic != null
+                    ? NetworkImage(widget.post.userProfilePic)
+                    : null,
+            child:
+                widget.post.userProfilePic == null
+                    ? Text(widget.post.userName[0])
+                    : null,
           ),
         ),
         const SizedBox(width: 6),
@@ -88,7 +91,10 @@ class _PostItemState extends State<PostItem> {
               onTap: widget.checkProfileEnable ? widget.onProfileClick : null,
               child: Text(
                 widget.post.userName,
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                ),
               ),
             ),
             Text(
@@ -108,16 +114,18 @@ class _PostItemState extends State<PostItem> {
         IconButton(
           onPressed: widget.onLikeClicked,
           icon: Icon(
-            widget.post.isLiked ? Icons.favorite : Icons.favorite_border,
-            color: widget.post.isLiked ? Colors.red : Colors.grey,
+            Icons.favorite,
+            /*widget.post.isLiked ? Icons.favorite : Icons.favorite_border*/
+            color:
+                Colors.red /*widget.post.isLiked ? Colors.red : Colors.grey,*/,
           ),
         ),
         Text(widget.post.likes.toString()),
         const SizedBox(width: 10),
-        IconButton(
+        /*IconButton(
           onPressed: widget.onShareClick,
           icon: const Icon(Icons.share, color: Colors.grey),
-        ),
+        ),*/
       ],
     );
   }
