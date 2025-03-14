@@ -71,10 +71,6 @@ class _TopScrollingContentState extends State<TopScrollingContent> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  widget.userProfile.name,
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
                 // TODO: Add badges here
               ],
             ),

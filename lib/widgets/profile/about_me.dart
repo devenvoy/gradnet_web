@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gradnet_web/widgets/profile/section_title.dart';
 
 class AboutMeSection extends StatelessWidget {
   final String about;
@@ -11,16 +12,7 @@ class AboutMeSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Section Title with Icon
-        Row(
-          children: [
-            Icon(Icons.person_outline, color: Theme.of(context).colorScheme.primary),
-            SizedBox(width: 8),
-            Text(
-              "About Me",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
+        SectionTitle(title: "About Me",icon: Icons.person_outline,),
         SizedBox(height: 8),
         // About Me Content
         Container(

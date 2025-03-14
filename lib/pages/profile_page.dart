@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:gradnet_web/model/profile_model.dart';
 import 'package:gradnet_web/providers/profile_screen_provider.dart';
@@ -53,62 +55,83 @@ class _ProfileScreenState extends State<ProfileScreen> {
         }
 
         final userProfile = snapshot.data!;
-
-        return Scaffold(
-          appBar: TopAppBarView(
-            userProfile: userProfile,
-            isVisible: true,
-            onMenuClick: () {},
-          ),
-          body: Stack(
-            children: [
-              TopBackground(backgroundPic: userProfile.backgroundPic ?? "", height: 200),
-              SingleChildScrollView(
-                controller: _scrollController,
-                child: Column(
-                  children: [
-                    const SizedBox(height: 120),
-                    TopScrollingContent(userProfile: userProfile, scrollController: _scrollController),
-                    Container(
-                      padding: const EdgeInsets.all(8.0),
-                      color: Theme.of(context).colorScheme.surface,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(userProfile.name, style: Theme.of(context).textTheme.titleLarge),
-                          Text(userProfile.email, style: Theme.of(context).textTheme.bodyMedium),
-                          if (userProfile.designation != null)
-                            Text(userProfile.designation!, style: Theme.of(context).textTheme.bodyMedium),
-                        ],
-                      ),
-                    ),
-                    DefaultTabController(
-                      length: 2,
-                      child: Column(
-                        children: [
-                          TabBar(
-                            indicator: FancyIndicator(color: Colors.blue[300]!),
-                            tabs: const [
-                              Tab(text: 'Posts'),
-                              Tab(text: 'Details'),
-                            ],
-                          ),
-                          SizedBox(
-                            height: 400,
-                            child: TabBarView(
-                              children: [
-                                UserPostsContent(),
-                                UserDetailsContent(userProfile: userProfile),
-                              ],
+        return DefaultTabController(
+          length: 2, // Ensure the number of tabs matches
+          child: Scaffold(
+            appBar: TopAppBarView(
+              userProfile: userProfile,
+              isVisible: true,
+              onMenuClick: () {},
+            ),
+            body: NestedScrollView(
+              controller: _scrollController,
+              headerSliverBuilder: (context, innerBoxIsScrolled) {
+                return [
+                  SliverToBoxAdapter(
+                    child: Stack(
+                      children: [
+                        TopBackground(
+                          backgroundPic: userProfile.backgroundPic ?? "",
+                          height: 200,
+                        ),
+                        Column(
+                          children: [
+                            const SizedBox(height: 120),
+                            TopScrollingContent(
+                              userProfile: userProfile,
+                              scrollController: _scrollController,
                             ),
-                          ),
-                        ],
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(8.0),
+                              color: Theme.of(context).colorScheme.surface,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    userProfile.name,
+                                    style:
+                                        Theme.of(context).textTheme.titleLarge,
+                                  ),
+                                  Text(
+                                    userProfile.email,
+                                    style:
+                                        Theme.of(context).textTheme.bodyMedium,
+                                  ),
+                                  if (userProfile.designation != null)
+                                    Text(
+                                      userProfile.designation!,
+                                      style:
+                                          Theme.of(
+                                            context,
+                                          ).textTheme.bodyMedium,
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  SliverPersistentHeader(
+                    pinned: true, // Keeps the TabBar fixed after scrolling
+                    delegate: _SliverAppBarDelegate(
+                      TabBar(
+                        indicator: FancyIndicator(color: Colors.blue[300]!),
+                        tabs: const [Tab(text: 'Posts'), Tab(text: 'Details')],
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ];
+              },
+              body: TabBarView(
+                children: [
+                  UserPostsContent(),
+                  UserDetailsContent(userProfile: userProfile),
+                ],
               ),
-            ],
+            ),
           ),
         );
       },
@@ -116,7 +139,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 }
 
+class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
+  final TabBar _tabBar;
 
+  _SliverAppBarDelegate(this._tabBar);
+
+  @override
+  double get minExtent => _tabBar.preferredSize.height;
+
+  @override
+  double get maxExtent => _tabBar.preferredSize.height;
+
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    return Container(
+      color: Theme.of(context).scaffoldBackgroundColor,
+      child: _tabBar,
+    );
+  }
+
+  @override
+  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) {
+    return false;
+  }
+}
 
 class UserPostsContent extends StatelessWidget {
   const UserPostsContent({super.key});
@@ -131,36 +181,6 @@ class UserPostsContent extends StatelessWidget {
   }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 class UserDetailsContent extends StatelessWidget {
   final UserProfileResponse userProfile;
 
@@ -168,58 +188,63 @@ class UserDetailsContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          AboutMeSection(about: userProfile.aboutSelf.toString()),
-          
-          InterestsSection(
-            icon: Icons.computer,
-            title: "Skills",
-            data: userProfile.skills,
-          ),
-          
-          if (userProfile.education.isNotEmpty) ...[
-            SectionTitle(icon: Icons.school, title: "Education"),
-            Card(
-              margin: EdgeInsets.all(10),
-              color: Theme.of(context).cardColor,
-              elevation: 1,
-              child: Column(
-                children: userProfile.education
-                    .map((education) => EducationItem(education: education))
-                    .toList(),
-              ),
+    return ListView(
+      padding: EdgeInsets.all(10),
+      children: [
+        AboutMeSection(about: userProfile.aboutSelf.toString()),
+
+        InterestsSection(
+          icon: Icons.computer,
+          title: "Skills",
+          data: userProfile.skills,
+        ),
+
+        if (userProfile.education.isNotEmpty) ...[
+          SectionTitle(icon: Icons.school, title: "Education"),
+          Card(
+            margin: EdgeInsets.symmetric(vertical: 10),
+            color: Theme.of(context).cardColor,
+            elevation: 1,
+            child: Column(
+              children:
+                  userProfile.education
+                      .map((education) => EducationItem(education: education))
+                      .toList(),
             ),
-          ],
-
-          if (userProfile.experience.isNotEmpty) ...[
-            SectionTitle(icon: Icons.work_outline, title: "Experience"),
-            Card(
-              margin: EdgeInsets.all(10),
-              color: Theme.of(context).cardColor,
-              elevation: 1,
-              child: Column(
-                children: userProfile.experience
-                    .map((experience) => ExperienceItem(experience: experience))
-                    .toList(),
-              ),
-            ),
-          ],
-
-          InterestsSection(
-            icon: Icons.translate,
-            title: "Languages",
-            data: userProfile.languages,
-          ),
-
-          MoreInfoSection(
-            phoneNumber: userProfile.phoneNo.toString(),
-            email: userProfile.email,
-            socialUrls: userProfile.urls,
           ),
         ],
-      ),
+
+        if (userProfile.experience.isNotEmpty) ...[
+          SectionTitle(icon: Icons.work_outline, title: "Experience"),
+          Card(
+            margin: EdgeInsets.symmetric(vertical: 10),
+            color: Theme.of(context).cardColor,
+            elevation: 1,
+            child: Column(
+              children:
+                  userProfile.experience
+                      .map(
+                        (experience) => ExperienceItem(experience: experience),
+                      )
+                      .toList(),
+            ),
+          ),
+        ],
+
+        InterestsSection(
+          icon: Icons.translate,
+          title: "Languages",
+          data: userProfile.languages,
+        ),
+
+        MoreInfoSection(
+          phoneNumber: userProfile.phoneNo.toString(),
+          email: userProfile.email,
+          socialUrls: userProfile.urls,
+        ),
+
+        const SizedBox(height: 200),
+      ],
     );
   }
 }
