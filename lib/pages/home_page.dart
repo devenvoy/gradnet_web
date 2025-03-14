@@ -18,7 +18,8 @@ class HomeScreen extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 GoRouter.of(context).pushNamed(
-                  MyAppRouteConstants.postRouteName
+                  MyAppRouteConstants.postRouteName,
+                  params: {'userId':'75ed0707-e5e7-45cf-9013-c6cbe79ceb49'}
                 );
               },
               child: Text("post page"),

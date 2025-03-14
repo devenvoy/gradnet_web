@@ -8,7 +8,7 @@ class CustomPrimaryButton extends StatelessWidget {
   final Function() onPressed;
   final bool showLoader; // Make final since it's not mutable in StatelessWidget
 
-  CustomPrimaryButton({
+  const CustomPrimaryButton({
     super.key,
     required this.buttonColor,
     required this.textValue,

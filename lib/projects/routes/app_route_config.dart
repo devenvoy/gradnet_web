@@ -35,9 +35,11 @@ class MyAppRouter {
 
       GoRoute(
         name: MyAppRouteConstants.postRouteName,
-        path: '/${MyAppRouteConstants.postRouteName}',
+        path: '/${MyAppRouteConstants.postRouteName}/:userId',
         pageBuilder: (context, state) {
-          return MaterialPage(child: PostPage());
+          return MaterialPage(child: PostPage(
+            userId: state.params["userId"]!,
+          ));
         },
       ),
 

@@ -39,7 +39,7 @@ class _LoadingAnimationState extends State<LoadingAnimation>
               height: 60,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(color: Colors.white, width: 5),
+                border: Border.all(color: Colors.black, width: 5),
               ),
             ),
           ),

@@ -7,11 +7,11 @@ class InputField extends StatelessWidget {
   final String? errorText;
   final bool obscureText;
   final Widget suffixIcon;
-  TextInputType? keyBoardType;
+  final TextInputType? keyBoardType;
   final TextEditingController controller;
 
-   InputField({
-    Key? key,
+   const InputField({
+    super.key,
     required this.hintText,
     this.errorText,
     this.obscureText = false,
@@ -19,7 +19,7 @@ class InputField extends StatelessWidget {
     required this.controller,
     this.keyBoardType
 
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
