@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:gradnet_web/projects/routes/app_route_constants.dart';
 import 'package:provider/provider.dart';
 
 import '../theme.dart';
@@ -7,7 +9,9 @@ import '../widgets/primary_button.dart';
 import '../providers/forgot_password_provider.dart';
 
 class NewPasswordScreen extends StatelessWidget {
-  const NewPasswordScreen({super.key});
+  final String token;
+
+  const NewPasswordScreen({super.key, required this.token});
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +99,7 @@ class NewPasswordScreen extends StatelessWidget {
                       textValue: 'Change Password',
                       textColor: Colors.white,
                       showLoader: forgotPasswordProvider.isLoading,
-                      onPressed: () async {
+                      onPressed: () {
                         onSubmit(context);
                       },
                     ),
@@ -114,17 +118,14 @@ class NewPasswordScreen extends StatelessWidget {
       context,
       listen: false,
     );
-    String? result = await provider.validateAndSubmit(
-      "oldPassword",
-      "your_token",
-    );
+    
+    String? result = await provider.validateAndSubmit("oldPassword", token);
 
     if (result != null) {
       if (context.mounted) {
-        Navigator.pushReplacementNamed(
-          context,
-          '/passwordResult',
-          arguments: result,
+        GoRouter.of(context).replaceNamed(
+          MyAppRouteConstants.resultRouteName,
+          queryParams: {'message': result},
         );
       }
     }

@@ -1,15 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:gradnet_web/projects/routes/app_route_constants.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
 
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      body: Center(
+        child: Column(
+          children: [
+            Text("Welcome to GradNet", style: TextStyle(fontSize: 18)),
+
+            SizedBox(height: 30),
+
+            ElevatedButton(
+              onPressed: () {
+                GoRouter.of(context).pushNamed(
+                  MyAppRouteConstants.newPasswordRouteName,
+                  queryParams: {'token': 'jnonovnadonv'},
+                );
+              },
+              child: Text("new password"),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 
-class PasswordResultScreen extends StatelessWidget {
-  const PasswordResultScreen({super.key});
+class ResultScreen extends StatelessWidget {
+  final String resultMessage;
+
+  const ResultScreen({super.key, required this.resultMessage});
+
+
 
   @override
   Widget build(BuildContext context) {
     // Retrieve the result message from the arguments
-    final String resultMessage =
-        ModalRoute.of(context)?.settings.arguments as String? ?? "No result";
 
     return Scaffold(
       body: Center(
