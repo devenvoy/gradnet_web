@@ -14,13 +14,14 @@ class PostPage extends StatefulWidget {
 }
 
 class _PostPageState extends State<PostPage> {
-  
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<PostScreenProvider>(context, listen: false)
-          .fetchUserPosts(widget.userId);
+      Provider.of<PostScreenProvider>(
+        context,
+        listen: false,
+      ).fetchUserPosts(widget.userId);
     });
   }
 
@@ -30,18 +31,22 @@ class _PostPageState extends State<PostPage> {
 
     return Scaffold(
       appBar: AppBar(title: const Text("Gradnet Web App")),
-      body: postProvider.isLoading
-          ? Center(
-              child: LoadingAnimation()
-            )
-          : postProvider.posts.isEmpty
-              ? const Center(child: Text("No posts available"))
-              : ListView.builder(
-                  itemCount: postProvider.posts.length,
-                  itemBuilder: (context, index) {
-                    return PostItem(post: postProvider.posts[index]);
-                  },
+      body:
+          postProvider.isLoading
+              ? Center(child: LoadingAnimation())
+              : postProvider.posts.isNotEmpty
+              ? ListView.builder(
+                itemCount: postProvider.posts.length,
+                itemBuilder: (context, index) {
+                  return PostItem(post: postProvider.posts[index]);
+                },
+              )
+              : Center(
+                child: Text(
+                  postProvider.message,
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
+              ),
     );
   }
 }
