@@ -22,31 +22,41 @@ class _PostImagesState extends State<PostImages> {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    double indicatorSize = screenWidth < 600 ? 5 : 8; // Dots size
+    double screenHeight = MediaQuery.of(context).size.height;
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return Stack(
-          children: [
-            CarouselSlider.builder(
+    double carouselWidth = screenWidth > 800 ? screenWidth * 0.6 : screenWidth * 0.9;
+    double carouselHeight = screenWidth > 800 ? screenHeight * 0.5 : screenHeight * 0.35;
+    double indicatorSize = screenWidth < 600 ? 6 : 8;
+
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            width: carouselWidth,
+            height: carouselHeight,
+            child: CarouselSlider.builder(
               itemCount: widget.images.length,
               itemBuilder: (context, index, realIndex) {
                 return Container(
-                  color: Colors.black, // Black background
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(6),
-                    child: Image.network(
-                      widget.images[index],
-                      fit: BoxFit.cover, 
-                      loadingBuilder: (context, child, loadingProgress) {
-                        if (loadingProgress == null) return child;
-                        return Center(child: LoadingAnimation()); // Use Custom Animation
-                      },
-                      errorBuilder: (context, error, stackTrace) => Center(
-                        child: IconButton(
-                          icon: Icon(Icons.refresh, size: 40, color: Colors.white),
-                          onPressed: () => setState(() {}),
-                        ),
+                  decoration: BoxDecoration(
+                    color: Colors.black,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  clipBehavior: Clip.hardEdge,
+                  child: Image.network(
+                    widget.images[index],
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    height: double.infinity,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Center(child: LoadingAnimation());
+                    },
+                    errorBuilder: (context, error, stackTrace) => Center(
+                      child: IconButton(
+                        icon: Icon(Icons.refresh, size: 40, color: Colors.white),
+                        onPressed: () => setState(() {}),
                       ),
                     ),
                   ),
@@ -62,32 +72,30 @@ class _PostImagesState extends State<PostImages> {
                 },
               ),
             ),
-            if (widget.images.length > 1)
-              Positioned(
-                bottom: 10,
-                left: 0,
-                right: 0,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(
-                    widget.images.length,
-                    (index) => Container(
-                      margin: EdgeInsets.symmetric(horizontal: 4),
-                      width: _currentIndex == index ? indicatorSize + 2 : indicatorSize,
-                      height: indicatorSize,
-                      decoration: BoxDecoration(
-                        color: _currentIndex == index
-                            ? Theme.of(context).primaryColor
-                            : Color(0xFFD9D9D9),
-                        shape: BoxShape.circle,
-                      ),
+          ),
+          if (widget.images.length > 1)
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(
+                  widget.images.length,
+                      (index) => Container(
+                    margin: EdgeInsets.symmetric(horizontal: 4),
+                    width: _currentIndex == index ? indicatorSize + 2 : indicatorSize,
+                    height: indicatorSize,
+                    decoration: BoxDecoration(
+                      color: _currentIndex == index
+                          ? Theme.of(context).primaryColor
+                          : Color(0xFFD9D9D9),
+                      shape: BoxShape.circle,
                     ),
                   ),
                 ),
               ),
-          ],
-        );
-      },
+            ),
+        ],
+      ),
     );
   }
 }

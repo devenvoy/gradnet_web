@@ -1,8 +1,7 @@
-import 'dart:convert';
 import 'dart:developer';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:gradnet_web/model/api_response.dart';
-import 'package:http/http.dart' as http;
 
 class ForgotPasswordProvider extends ChangeNotifier {
   TextEditingController passwordController = TextEditingController();
@@ -14,6 +13,7 @@ class ForgotPasswordProvider extends ChangeNotifier {
   String? passwordError;
   String? confirmPasswordError;
   bool isLoading = false;
+  final Dio _dio = Dio();
 
   void togglePassword() {
     passwordVisible = !passwordVisible;
@@ -25,7 +25,7 @@ class ForgotPasswordProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<String?> validateAndSubmit(String oldPassword, String token) async {
+  Future<String?> validateAndSubmit(String token) async {
     String password = passwordController.text.trim();
     String confirmPassword = confirmNewPasswordController.text.trim();
 
@@ -46,54 +46,58 @@ class ForgotPasswordProvider extends ChangeNotifier {
     notifyListeners();
 
     if (passwordError == null && confirmPasswordError == null) {
-      return await _changePassword(oldPassword, password, token);
+      return await _changePassword(password, token);
     }
     return null;
   }
 
-  Future<String> _changePassword(
-    String oldPassword,
-    String newPassword,
-    String token,
-  ) async {
+  Future<String> _changePassword(String newPassword, String token) async {
     isLoading = true;
     notifyListeners();
 
-    const String url =
-        'https://grednet-production.up.railway.app/change-password/';
+    final String url =
+        'https://grednet-production.up.railway.app/auth/reset-password/$token';
+
+    final FormData formData = FormData.fromMap({
+      "new_password": newPassword,
+      "re_new_password": newPassword,
+    });
+
+    log("Sending request to $url with data: ${formData.fields}");
 
     try {
-      log("TAG111: Started");
-      final response = await http.post(
-        Uri.parse(url),
-        headers: {
-          'accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-        body: jsonEncode({
-          "old_password": oldPassword,
-          "new_password": newPassword,
-        }),
+      final response = await _dio.post(
+        url,
+        data: formData,
+        options: Options(
+          headers: {
+            'accept': 'application/json',
+            'Content-Type': 'multipart/form-data',
+          },
+        ),
       );
-      log("TAG111: still going");
-
-      // Ensure response body is properly parsed
-      final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
-      log("TAG111: response came $jsonResponse");
 
       stopLoader();
 
-      final apiResponse = ApiResponse.fromJson(jsonResponse);
+      log("Response: ${response.data}");
 
-      log("TAG111: response came ${apiResponse.detail.message}");
-
-      return apiResponse.detail.message;
-      
+      if (response.statusCode == 200 && response.data['status'] == true) {
+        return response.data['message'] ?? "Password changed successfully";
+      } else {
+        return response.data['message'] ??
+            "Failed to change password. Please try again.";
+      }
     } catch (e) {
       stopLoader();
-      log("TAG111: error $e");
-      return "Failed to change password. Please try again.";
+
+      if (e is DioException) {
+        log("Error Response Data: ${e.response?.data}");
+        return e.response?.data['detail']?.toString() ??
+            "Failed to change password. Please try again.";
+      }
+
+      log("Unknown error: $e");
+      return "An unexpected error occurred.";
     }
   }
 

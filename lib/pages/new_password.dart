@@ -119,7 +119,7 @@ class NewPasswordScreen extends StatelessWidget {
       listen: false,
     );
     
-    String? result = await provider.validateAndSubmit("oldPassword", token);
+    String? result = await provider.validateAndSubmit(token);
 
     if (result != null) {
       if (context.mounted) {

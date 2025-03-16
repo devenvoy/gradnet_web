@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gradnet_web/projects/routes/app_route_config.dart';
 import 'package:gradnet_web/providers/forgot_password_provider.dart';
+import 'package:gradnet_web/providers/post_detail_provider.dart';
 import 'package:gradnet_web/providers/post_screen_provider.dart';
 import 'package:gradnet_web/providers/profile_screen_provider.dart';
 import 'package:gradnet_web/theme.dart';
@@ -21,7 +22,8 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (context) => ForgotPasswordProvider()),
         ChangeNotifierProvider(create: (context) => ProfileScreenProvider()),
-        ChangeNotifierProvider(create: (context) => PostScreenProvider())
+        ChangeNotifierProvider(create: (context) => PostScreenProvider()),
+        ChangeNotifierProvider(create: (context) => PostProvider()),
       ],
 
       child: MaterialApp.router(

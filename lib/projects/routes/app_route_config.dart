@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:gradnet_web/pages/home_page.dart';
 import 'package:gradnet_web/pages/new_password.dart';
 import 'package:gradnet_web/pages/password_result.dart';
+import 'package:gradnet_web/pages/post_detail.dart';
 import 'package:gradnet_web/pages/post_page.dart';
 import 'package:gradnet_web/pages/profile_page.dart';
 import 'package:gradnet_web/projects/routes/app_route_constants.dart';
@@ -50,6 +51,16 @@ class MyAppRouter {
         pageBuilder: (context, state) {
           return MaterialPage(child: ProfileScreen(
             userId: state.params["userId"]!,
+          ));
+        },
+      ),
+
+   GoRoute(
+        name: MyAppRouteConstants.postDetailName,
+        path: '/${MyAppRouteConstants.postDetailName}/:postId',
+        pageBuilder: (context, state) {
+          return MaterialPage(child: PostDetail(
+            postId: state.params["postId"]!,
           ));
         },
       ),
