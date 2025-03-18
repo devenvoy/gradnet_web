@@ -10,11 +10,12 @@ import 'package:gradnet_web/widgets/profile/more_info_section.dart';
 import 'package:gradnet_web/widgets/profile/section_title.dart';
 import 'package:gradnet_web/widgets/profile/top_background.dart';
 import 'package:gradnet_web/widgets/profile/top_scrolling_content.dart';
+import 'package:gradnet_web/widgets/user_role_chip.dart';
 import 'package:provider/provider.dart';
 import '../providers/post_screen_provider.dart';
 import '../widgets/loading_animation.dart';
-import '../widgets/post_item.dart';
 import '../widgets/profile/top_bar_view.dart';
+import '../widgets/profile_post_item.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String userId;
@@ -72,11 +73,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
       future: userProfileFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return Center(child: CircularProgressIndicator(
+            color: Colors.blue[300]!,
+          ));
         } else if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
+          return Center(child: Text('Error: ${snapshot.error}',
+            style: TextStyle(color: Colors.redAccent),));
         } else if (!snapshot.hasData) {
-          return const Center(child: Text('User not found'));
+          return const Center(child: Text(
+            'User not found', style: TextStyle(color: Colors.redAccent),));
         }
 
         final userProfile = snapshot.data!;
@@ -119,25 +124,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               width: double.infinity,
                               padding: const EdgeInsets.all(8.0),
                               color: Theme.of(context).colorScheme.surface,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment
+                                    .spaceBetween,
                                 children: [
-                                  Text(
-                                    userProfile.name,
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment
+                                        .start,
+                                    children: [
+                                      Text(
+                                        userProfile.name,
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      Text(
+                                        userProfile.designation ??
+                                            (userProfile.course ??
+                                                userProfile.email),
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  Text(
-                                    userProfile.designation ??
-                                        (userProfile.course ??
-                                            userProfile.email),
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
+                                  UserRoleChip(userRole: userProfile.userRole)
                                 ],
                               ),
                             ),
@@ -214,11 +227,12 @@ class UserPostsContent extends StatelessWidget {
         child: LoadingAnimation()
     )
         : postProvider.posts.isEmpty
-        ? const Center(child: Text("No posts available"))
+        ? const Center(child: Text(
+      "No posts available", style: TextStyle(color: Colors.redAccent),))
         : ListView.builder(
       itemCount: postProvider.posts.length,
       itemBuilder: (context, index) {
-        return PostItem(post: postProvider.posts[index]);
+        return ProfilePostItem(post: postProvider.posts[index]);
       },
     );
   }
@@ -273,11 +287,7 @@ class UserDetailsContent extends StatelessWidget {
           title: "Languages",
           data: userProfile.languages,
         ),
-        MoreInfoSection(
-          phoneNumber: userProfile.phoneNo.toString(),
-          email: userProfile.email,
-          socialUrls: userProfile.urls,
-        ),
+        MoreInfoSection(userProfile: userProfile),
         const SizedBox(height: 200),
       ],
     );

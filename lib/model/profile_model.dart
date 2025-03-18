@@ -2,6 +2,8 @@ class UserProfileResponse {
   final String id;
   final String name;
   final String email;
+  final String userRole;
+  final bool isPrivate;
   final String? phoneNo;
   final String verifyId;
   final String? profilePic;
@@ -59,6 +61,8 @@ class UserProfileResponse {
     this.createdAt = "",
     this.updatedAt = "",
     this.accessToken = "",
+    this.userRole = "",
+    this.isPrivate = false
   });
 
   @override
@@ -92,6 +96,8 @@ class UserProfileResponse {
         'isActive: $isActive, '
         'createdAt: $createdAt, '
         'updatedAt: $updatedAt, '
+        'user_role: $userRole, '
+        'isPrivate: $isPrivate, '
         'accessToken: $accessToken}';
   }
 
@@ -138,13 +144,16 @@ class UserProfileResponse {
       urls:
           (json['urls'] as List<dynamic>?)
               ?.map((e) => URLDto.fromJson(e))
+              .where((urlDto) => urlDto.url != null)
               .toList() ??
           [],
       isActive: json['is_active'] ?? false,
       createdAt: json['created_at'] ?? "",
       updatedAt: json['updated_at'] ?? "",
       accessToken: json['access_token'] ?? "",
-      course: json['course']
+        course: json['course'],
+        userRole: json['role'],
+        isPrivate: json['is_private'] ?? true
     );
   }
 }
@@ -178,7 +187,6 @@ class EducationDto {
         'description: $description, '
         'startDate: $startDate, '
         'endDate: $endDate'
-
         '}';
   }
 
@@ -227,8 +235,6 @@ class ExperienceDto {
         'jobDescription: $jobDescription, '
         'startDate: $startDate, '
         'endDate: $endDate'
-
-
         '}';
   }
 

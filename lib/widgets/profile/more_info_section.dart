@@ -5,15 +5,11 @@ import 'package:gradnet_web/widgets/profile/section_title.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MoreInfoSection extends StatelessWidget {
-  final String phoneNumber;
-  final String email;
-  final List<URLDto>? socialUrls;
+
+  final UserProfileResponse userProfile;
 
   const MoreInfoSection({
-    super.key,
-    required this.phoneNumber,
-    required this.email,
-    this.socialUrls,
+    super.key, required this.userProfile,
   });
 
   void _launchUrl(String url) async {
@@ -33,21 +29,27 @@ class MoreInfoSection extends StatelessWidget {
           alignment: WrapAlignment.center,
           spacing: 12,
           children: [
-            _buildContactIconButton(
-              icon: Icons.phone,
-              onClick: () => _launchUrl("tel:$phoneNumber"),
-            ),
-            _buildContactIconButton(
-              icon: Icons.email,
-              onClick: () => _launchUrl("mailto:$email"),
-            ),
-            if (socialUrls != null)
-              ...socialUrls!.map(
-                (urlDto) => _buildContactIconButton(
-                  icon: _getIconForType(urlDto.type),
-                  onClick: urlDto.url != null ? () => _launchUrl(urlDto.url!) : null,
-                ),
+            if (!userProfile.isPrivate) ...[
+              _buildContactIconButton(
+                icon: Icons.phone,
+                onClick: userProfile.phoneNo != null
+                    ? () => _launchUrl("tel:${userProfile.phoneNo}")
+                    : null,
               ),
+              _buildContactIconButton(
+                icon: Icons.email,
+                onClick: () => _launchUrl("mailto:${userProfile.email}"),
+              ),
+            ],
+            ...userProfile.urls.map(
+                  (urlDto) =>
+                  _buildContactIconButton(
+                    icon: _getIconForType(urlDto.type),
+                    onClick: urlDto.url != null
+                        ? () => _launchUrl(urlDto.url!)
+                        : null,
+                  ),
+            ),
           ],
         ),
       ],
