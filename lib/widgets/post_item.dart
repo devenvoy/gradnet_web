@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gradnet_web/widgets/expandable_richtext.dart';
 import 'package:gradnet_web/widgets/post_images.dart';
+import 'package:gradnet_web/widgets/profile/circle_image.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 import '../model/post_model.dart' show Post;
@@ -58,7 +59,20 @@ class _PostItemState extends State<PostItem> {
               if (widget.post.photos.isNotEmpty)
                 PostImages(images: widget.post.photos, onLikeClicked: () {}),
               const SizedBox(height: 10),
-              _buildActionRow(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Liked by ${widget.post.likes} Users",
+                    style: const TextStyle(fontSize: 14, color: Colors.grey),
+                  ),
+                  IconButton(
+                    onPressed: widget.onShareClick,
+                    icon: const Icon(Icons.share, size: 28, color: Colors.grey),
+                  ),
+                ],
+              ),
+              // _buildActionRow(),
             ],
           ),
         );
@@ -71,21 +85,18 @@ class _PostItemState extends State<PostItem> {
       children: [
         GestureDetector(
           onTap: widget.checkProfileEnable ? widget.onProfileClick : null,
-          child: CircleAvatar(
-            radius: 18,
-            backgroundImage:
-                widget.post.userProfilePic != null
-                    ? NetworkImage(widget.post.userProfilePic)
-                    : null,
-            child:
-                widget.post.userProfilePic == null
-                    ? Text(widget.post.userName[0])
-                    : null,
+          child: CircularProfileImage(
+            placeHolderName:
+                widget.post.userName.isNotEmpty ? widget.post.userName : "User",
+            imageUrl: widget.post.userProfilePic,
+            borderWidth: 0,
+            imageSize: 48,
           ),
         ),
         const SizedBox(width: 6),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             GestureDetector(
               onTap: widget.checkProfileEnable ? widget.onProfileClick : null,
